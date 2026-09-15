@@ -52,7 +52,7 @@ public class BookLibraryDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(300);
             entity.Property(e => e.ISBN).IsRequired().HasMaxLength(20);
-            entity.HasIndex(e => e.ISBN).IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.ISBN }).IsUnique().HasDatabaseName("UQ_Books_UserId_ISBN");
             entity.Property(e => e.PublishedYear).IsRequired();
             entity.Property(e => e.Status).HasColumnType("tinyint");
             entity.Property(e => e.BookNumber);
