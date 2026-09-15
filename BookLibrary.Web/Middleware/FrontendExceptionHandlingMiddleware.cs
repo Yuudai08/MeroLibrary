@@ -31,6 +31,12 @@ public class FrontendExceptionHandlingMiddleware
         {
             _logger.LogWarning("API returned error {StatusCode}: {Message}", ex.StatusCode, ex.Message);
 
+            if (ex.StatusCode == 401)
+            {
+                context.Response.Redirect("/Account/Login");
+                return;
+            }
+
             context.Response.StatusCode = ex.StatusCode;
             context.Response.Redirect($"/Error?statusCode={ex.StatusCode}");
         }

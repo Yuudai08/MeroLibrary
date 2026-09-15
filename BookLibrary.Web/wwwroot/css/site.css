@@ -46,3 +46,15 @@ body {
   padding-left: 0;
   margin-bottom: 0;
 }
+/* Card and Auth styling */
+.rounded-4 {
+  border-radius: 1rem !important;
+}
+
+.bg-primary-subtle {
+  background-color: #e7f1ff !important;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04), 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+}

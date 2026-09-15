@@ -10,8 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages(options =>
 {
-    // Require authentication for Books pages
-    options.Conventions.AuthorizeFolder("/Books");
+    // Require authentication for ALL pages by default across MeroLibrary
+    options.Conventions.AuthorizeFolder("/");
+    options.Conventions.AllowAnonymousToPage("/Account/Login");
+    options.Conventions.AllowAnonymousToPage("/Account/Register");
+    options.Conventions.AllowAnonymousToPage("/Error");
 });
 
 builder.Services.AddHttpContextAccessor();
@@ -22,7 +25,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Error";
+        options.AccessDeniedPath = "/Account/Login";
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
     });

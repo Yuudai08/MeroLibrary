@@ -1,21 +1,24 @@
-@page
+ï»¿@page
 @model BookLibrary.Web.Pages.Account.LoginModel
 @{
-    ViewData["Title"] = "Log In";
+    ViewData["Title"] = "Sign In";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0">
+<div class="row justify-content-center mt-3 mt-md-4">
+    <div class="col-md-7 col-lg-5 col-xl-4">
+        <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <h1 class="h3 fw-bold text-primary">?? MeroLibrary</h1>
-                    <p class="text-muted small">Sign in to manage your personal library</p>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width: 56px; height: 56px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/><path d="M6 6h10"/><path d="M6 10h7"/></svg>
+                    </div>
+                    <h1 class="h4 fw-bold text-dark mb-1">Welcome to MeroLibrary</h1>
+                    <p class="text-secondary small">Please sign in to access your personal library</p>
                 </div>
 
                 @if (!string.IsNullOrEmpty(Model.SuccessMessage))
                 {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show small" role="alert">
                         @Model.SuccessMessage
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -23,32 +26,55 @@
 
                 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
                 {
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div class="alert alert-danger alert-dismissible fade show small" role="alert">
                         @Model.ErrorMessage
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 }
 
+                <!-- Quick Demo Login Helper -->
+                <div class="card bg-light border-0 mb-4 rounded-3">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="badge bg-primary text-white mb-1">Demo Account</span>
+                                <div class="small text-muted" style="font-size: 0.82rem;">
+                                    User: <strong class="text-dark">merouser</strong> &bull; Pass: <strong class="text-dark">Password123!</strong>
+                                </div>
+                            </div>
+                            <button type="button" id="btnFillDemo" class="btn btn-outline-primary btn-sm px-2 py-1" style="font-size: 0.78rem;">
+                                Quick Fill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger small" role="alert"></div>
 
                     <div class="mb-3">
-                        <label asp-for="Input.Username" class="form-label fw-semibold">Username</label>
-                        <input asp-for="Input.Username" class="form-control form-control-lg" placeholder="Enter your username" autofocus />
+                        <label asp-for="Input.Username" class="form-label fw-semibold small text-secondary">Username</label>
+                        <input asp-for="Input.Username" id="loginUsername" class="form-control" placeholder="Enter username" autofocus autocomplete="username" />
                         <span asp-validation-for="Input.Username" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="Input.Password" class="form-label fw-semibold">Password</label>
-                        <input asp-for="Input.Password" class="form-control form-control-lg" placeholder="••••••••" />
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label asp-for="Input.Password" class="form-label fw-semibold small text-secondary mb-0">Password</label>
+                        </div>
+                        <input asp-for="Input.Password" id="loginPassword" class="form-control" type="password" placeholder="Enter password" autocomplete="current-password" />
                         <span asp-validation-for="Input.Password" class="text-danger small"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3 shadow-sm">Sign In</button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3 shadow-sm fw-semibold fs-6">
+                        Sign In
+                    </button>
 
-                    <div class="text-center">
+                    <div class="text-center pt-2">
                         <span class="text-muted small">Don't have an account?</span>
-                        <a asp-page="Register" asp-route-returnUrl="@Model.ReturnUrl" class="small fw-semibold text-primary ms-1">Register here</a>
+                        <a asp-page="Register" asp-route-returnUrl="@Model.ReturnUrl" class="small fw-semibold text-primary ms-1 text-decoration-none">
+                            Register here
+                        </a>
                     </div>
                 </form>
             </div>
@@ -58,4 +84,15 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('btnFillDemo')?.addEventListener('click', function () {
+            const userInput = document.getElementById('loginUsername');
+            const passInput = document.getElementById('loginPassword');
+            if (userInput && passInput) {
+                userInput.value = 'merouser';
+                passInput.value = 'Password123!';
+                userInput.focus();
+            }
+        });
+    </script>
 }

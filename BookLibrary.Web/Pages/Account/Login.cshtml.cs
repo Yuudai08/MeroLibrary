@@ -38,9 +38,15 @@ public class LoginModel : PageModel
         public string Password { get; set; } = string.Empty;
     }
 
-    public void OnGet(string? returnUrl = null)
+    public IActionResult OnGet(string? returnUrl = null)
     {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return LocalRedirect(returnUrl ?? Url.Content("~/"));
+        }
+
         ReturnUrl = returnUrl;
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
