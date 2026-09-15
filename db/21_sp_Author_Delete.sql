@@ -1,0 +1,8 @@
+CREATE OR ALTER PROCEDURE dbo.sp_Author_Delete
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT OFF;
+    DELETE FROM dbo.Authors WHERE Id = @Id;
+END;
+GO

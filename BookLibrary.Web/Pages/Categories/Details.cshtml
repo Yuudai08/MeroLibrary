@@ -1,0 +1,96 @@
+@page "{id:int}"
+@model BookLibrary.Web.Pages.Categories.DetailsModel
+@{
+    ViewData["Title"] = Model.Category?.Name ?? "Category Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-9 col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a asp-page="Index" class="btn btn-outline-secondary btn-sm me-3">&larr; Back to Categories</a>
+            <h1 class="h3 mb-0">Category Details</h1>
+        </div>
+
+        @if (Model.Category != null)
+        {
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small">Category ID: #@Model.Category.Id</span>
+                            <h2 class="h4 card-title mb-0">@Model.Category.Name</h2>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <a asp-page="Edit" asp-route-id="@Model.Category.Id" class="btn btn-outline-primary">Edit Category</a>
+                            <a asp-page="Delete" asp-route-id="@Model.Category.Id" class="btn btn-outline-danger">Delete Category</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="h5 mb-0">Books in "@Model.Category.Name" (@Model.Books.Count)</h3>
+                <a asp-page="/Books/Create" class="btn btn-sm btn-outline-primary">+ Add Book</a>
+            </div>
+
+            @if (!Model.Books.Any())
+            {
+                <div class="text-center py-4 border rounded bg-light">
+                    <p class="text-muted mb-0">No books in this category are currently registered in the library.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive bg-white rounded shadow-sm border">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">ISBN</th>
+                                <th scope="col">Author</th>
+                                <th scope="col">Year</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var book in Model.Books)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">
+                                        <a asp-page="/Books/Details" asp-route-id="@book.Id" class="text-decoration-none text-dark">
+                                            @book.Title
+                                        </a>
+                                    </td>
+                                    <td><code class="text-muted">@book.ISBN</code></td>
+                                    <td>@book.AuthorName</td>
+                                    <td>@book.PublishedYear</td>
+                                    <td>
+                                        @switch (book.Status)
+                                        {
+                                            case BookLibrary.Web.Models.BookStatus.WantToRead:
+                                                <span class="badge bg-secondary">Want to Read</span>
+                                                break;
+                                            case BookLibrary.Web.Models.BookStatus.Reading:
+                                                <span class="badge bg-info text-dark">Reading</span>
+                                                break;
+                                            case BookLibrary.Web.Models.BookStatus.Completed:
+                                                <span class="badge bg-success">Completed</span>
+                                                break;
+                                            case BookLibrary.Web.Models.BookStatus.Dropped:
+                                                <span class="badge bg-danger">Dropped</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-page="/Books/Details" asp-route-id="@book.Id" class="btn btn-sm btn-outline-secondary">View Book</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+</div>

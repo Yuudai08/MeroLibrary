@@ -1,0 +1,7 @@
+CREATE OR ALTER PROCEDURE dbo.sp_Category_GetAll
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT Id, Name FROM dbo.Categories ORDER BY Id;
+END;
+GO

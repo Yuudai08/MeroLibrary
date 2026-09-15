@@ -1,0 +1,193 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="mb-4">
+    <h1 class="h2 mb-1">MeroLibrary Dashboard</h1>
+    <p class="text-muted">Welcome to MeroLibrary! Overview of your personal collection, reading progress, and quick catalog actions.</p>
+</div>
+
+<!-- Stat Cards Row -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 border-start border-primary border-4">
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">Total Books</span>
+                </div>
+                <div class="display-6 fw-bold text-dark">@Model.TotalBooksCount</div>
+                <a asp-page="/Books/Index" class="small text-primary text-decoration-none d-inline-block mt-2">View all books &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 border-start border-success border-4">
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">Authors</span>
+                </div>
+                <div class="display-6 fw-bold text-dark">@Model.TotalAuthorsCount</div>
+                <a asp-page="/Authors/Index" class="small text-success text-decoration-none d-inline-block mt-2">View all authors &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 border-start border-warning border-4">
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">Categories</span>
+                </div>
+                <div class="display-6 fw-bold text-dark">@Model.TotalCategoriesCount</div>
+                <a asp-page="/Categories/Index" class="small text-warning-emphasis text-decoration-none d-inline-block mt-2">View all categories &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 border-start border-info border-4">
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="text-muted small fw-semibold text-uppercase">Currently Reading</span>
+                </div>
+                <div class="display-6 fw-bold text-info-emphasis">@Model.ReadingCount</div>
+                <a asp-page="/Books/Index" asp-route-status="@BookLibrary.Web.Models.BookStatus.Reading" class="small text-info-emphasis text-decoration-none d-inline-block mt-2">Filter reading list &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Card -->
+<div class="card shadow-sm border-0 mb-4 bg-light">
+    <div class="card-body p-4">
+        <h5 class="card-title h6 mb-3 text-secondary">Quick Actions</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-page="/Books/Create" class="btn btn-primary btn-sm px-3">+ Add New Book</a>
+            <a asp-page="/Authors/Create" class="btn btn-outline-success btn-sm px-3">+ Add Author</a>
+            <a asp-page="/Categories/Create" class="btn btn-outline-warning text-dark btn-sm px-3">+ Add Category</a>
+            <a asp-page="/Books/Index" class="btn btn-outline-secondary btn-sm px-3">Browse Full Catalog</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Reading Status Breakdown -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h5 class="card-title h6 mb-4">Reading Status Breakdown</h5>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold text-secondary">Want to Read</span>
+                        <span class="fw-bold">@Model.WantToReadCount</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-secondary" role="progressbar" style="width: @(Model.TotalBooksCount > 0 ? (Model.WantToReadCount * 100 / Model.TotalBooksCount) : 0)%" aria-valuenow="@Model.WantToReadCount" aria-valuemin="0" aria-valuemax="@Model.TotalBooksCount"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold text-info-emphasis">Currently Reading</span>
+                        <span class="fw-bold text-info-emphasis">@Model.ReadingCount</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: @(Model.TotalBooksCount > 0 ? (Model.ReadingCount * 100 / Model.TotalBooksCount) : 0)%" aria-valuenow="@Model.ReadingCount" aria-valuemin="0" aria-valuemax="@Model.TotalBooksCount"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold text-success">Completed</span>
+                        <span class="fw-bold text-success">@Model.CompletedCount</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @(Model.TotalBooksCount > 0 ? (Model.CompletedCount * 100 / Model.TotalBooksCount) : 0)%" aria-valuenow="@Model.CompletedCount" aria-valuemin="0" aria-valuemax="@Model.TotalBooksCount"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold text-danger">Dropped</span>
+                        <span class="fw-bold text-danger">@Model.DroppedCount</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: @(Model.TotalBooksCount > 0 ? (Model.DroppedCount * 100 / Model.TotalBooksCount) : 0)%" aria-valuenow="@Model.DroppedCount" aria-valuemin="0" aria-valuemax="@Model.TotalBooksCount"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Books Table -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title h6 mb-0">Recent Books</h5>
+                    <a asp-page="/Books/Index" class="small text-primary text-decoration-none">View All &rarr;</a>
+                </div>
+
+                @if (!Model.RecentBooks.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <p class="mb-0">No books found in the library.</p>
+                        <a asp-page="/Books/Create" class="btn btn-sm btn-outline-primary mt-2">+ Add First Book</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-sm" style="font-size: 0.9rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var book in Model.RecentBooks)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold text-truncate" style="max-width: 180px;">
+                                            <a asp-page="/Books/Details" asp-route-id="@book.Id" class="text-dark text-decoration-none">
+                                                @book.Title
+                                            </a>
+                                        </td>
+                                        <td class="text-muted text-truncate" style="max-width: 140px;">@book.AuthorName</td>
+                                        <td>
+                                            @switch (book.Status)
+                                            {
+                                                case BookLibrary.Web.Models.BookStatus.WantToRead:
+                                                    <span class="badge bg-secondary">Want to Read</span>
+                                                    break;
+                                                case BookLibrary.Web.Models.BookStatus.Reading:
+                                                    <span class="badge bg-info text-dark">Reading</span>
+                                                    break;
+                                                case BookLibrary.Web.Models.BookStatus.Completed:
+                                                    <span class="badge bg-success">Completed</span>
+                                                    break;
+                                                case BookLibrary.Web.Models.BookStatus.Dropped:
+                                                    <span class="badge bg-danger">Dropped</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-page="/Books/Details" asp-route-id="@book.Id" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.8rem;">Details</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

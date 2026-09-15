@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MeroLibrary</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BookLibrary.Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    @{
+        var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+    }
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-4">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-primary fs-4" asp-area="" asp-page="/Index">
+                    📚 MeroLibrary
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentPage == "/Index" || currentPage == "" ? "active fw-bold text-primary" : "text-dark")" asp-area="" asp-page="/Index">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentPage.StartsWith("/Books") ? "active fw-bold text-primary" : "text-dark")" asp-area="" asp-page="/Books/Index">My Books</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentPage.StartsWith("/Authors") ? "active fw-bold text-primary" : "text-dark")" asp-area="" asp-page="/Authors/Index">Authors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentPage.StartsWith("/Categories") ? "active fw-bold text-primary" : "text-dark")" asp-area="" asp-page="/Categories/Index">Categories</a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="navbar-text me-3 fw-semibold text-secondary small">
+                                👤 @User.Identity.Name
+                            </span>
+                            <form method="post" asp-page="/Account/Logout" class="d-inline">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Sign Out</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-primary btn-sm me-2" asp-page="/Account/Login">Sign In</a>
+                            <a class="btn btn-primary btn-sm" asp-page="/Account/Register">Register</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-5">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted py-3 bg-light">
+        <div class="container text-center text-muted small">
+            &copy; 2026 MeroLibrary Management System
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

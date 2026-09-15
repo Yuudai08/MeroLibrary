@@ -1,0 +1,248 @@
+@page
+@model BookLibrary.Web.Pages.Books.IndexModel
+@{
+    ViewData["Title"] = "Books";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 mb-1">My Library</h1>
+        <p class="text-muted mb-0">Manage your personal book collection in MeroLibrary</p>
+    </div>
+    <a asp-page="Create" class="btn btn-primary">
+        + Add New Book
+    </a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        @Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Search & Filter Card -->
+<div class="card shadow-sm border-0 mb-4 bg-light">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="searchTerm" class="form-label small fw-semibold">Search Keyword</label>
+                <input type="text" id="searchTerm" name="searchTerm" class="form-control" placeholder="Title, ISBN, or author..." value="@Model.SearchTerm" />
+            </div>
+            <div class="col-md-2">
+                <label for="status" class="form-label small fw-semibold">Status Filter</label>
+                <select id="status" name="status" class="form-select" asp-for="Status" asp-items="Html.GetEnumSelectList<BookLibrary.Web.Models.BookStatus>()">
+                    <option value="">All Statuses</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="authorId" class="form-label small fw-semibold">Author Filter</label>
+                <select id="authorId" name="authorId" class="form-select" asp-for="AuthorId" asp-items="Model.AuthorsList">
+                    <option value="">All Authors</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="categoryId" class="form-label small fw-semibold">Category Filter</label>
+                <select id="categoryId" name="categoryId" class="form-select" asp-for="CategoryId" asp-items="Model.CategoriesList">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="pageSize" class="form-label small fw-semibold">Per Page</label>
+                <select id="pageSize" name="pageSize" class="form-select" asp-for="PageSize">
+                    <option value="5">5 per page</option>
+                    <option value="10">10 per page</option>
+                    <option value="20">20 per page</option>
+                    <option value="50">50 per page</option>
+                </select>
+            </div>
+            <div class="col-12 d-flex gap-2 justify-content-end pt-2">
+                <button type="submit" class="btn btn-primary px-4">Apply Filters</button>
+                @if (Model.HasActiveFilters)
+                {
+                    <a asp-page="Index" class="btn btn-outline-secondary">Clear Filters</a>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.HasActiveFilters)
+{
+    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        <span class="small text-muted fw-semibold">Active Filters:</span>
+        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+        {
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                Search: "@Model.SearchTerm"
+                <a asp-page="Index" asp-route-status="@Model.Status" asp-route-authorId="@Model.AuthorId" asp-route-categoryId="@Model.CategoryId" asp-route-pageSize="@Model.PageSize" class="text-primary ms-1 text-decoration-none">&times;</a>
+            </span>
+        }
+        @if (Model.Status.HasValue)
+        {
+            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
+                Status: @Model.Status.Value
+                <a asp-page="Index" asp-route-searchTerm="@Model.SearchTerm" asp-route-authorId="@Model.AuthorId" asp-route-categoryId="@Model.CategoryId" asp-route-pageSize="@Model.PageSize" class="text-info-emphasis ms-1 text-decoration-none">&times;</a>
+            </span>
+        }
+        @if (Model.AuthorId.HasValue && Model.AuthorsList != null)
+        {
+            var selectedAuthor = Model.AuthorsList.FirstOrDefault(a => a.Value == Model.AuthorId.Value.ToString())?.Text ?? Model.AuthorId.Value.ToString();
+            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                Author: @selectedAuthor
+                <a asp-page="Index" asp-route-searchTerm="@Model.SearchTerm" asp-route-status="@Model.Status" asp-route-categoryId="@Model.CategoryId" asp-route-pageSize="@Model.PageSize" class="text-success ms-1 text-decoration-none">&times;</a>
+            </span>
+        }
+        @if (Model.CategoryId.HasValue && Model.CategoriesList != null)
+        {
+            var selectedCategory = Model.CategoriesList.FirstOrDefault(c => c.Value == Model.CategoryId.Value.ToString())?.Text ?? Model.CategoryId.Value.ToString();
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                Category: @selectedCategory
+                <a asp-page="Index" asp-route-searchTerm="@Model.SearchTerm" asp-route-status="@Model.Status" asp-route-authorId="@Model.AuthorId" asp-route-pageSize="@Model.PageSize" class="text-warning-emphasis ms-1 text-decoration-none">&times;</a>
+            </span>
+        }
+    </div>
+}
+
+@{
+    var booksList = Model.SearchResults ?? Model.PagedBooks?.Items ?? Array.Empty<BookLibrary.Web.Models.BookDto>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="small text-muted">
+        @if (Model.SearchResults != null)
+        {
+            <span>Found <strong>@Model.SearchResults.Count</strong> matching search result(s)</span>
+        }
+        else if (Model.PagedBooks != null)
+        {
+            var startItem = Model.PagedBooks.TotalCount == 0 ? 0 : ((Model.PagedBooks.Page - 1) * Model.PagedBooks.PageSize) + 1;
+            var endItem = Math.Min(Model.PagedBooks.Page * Model.PagedBooks.PageSize, Model.PagedBooks.TotalCount);
+            <span>Showing <strong>@startItem - @endItem</strong> of <strong>@Model.PagedBooks.TotalCount</strong> book(s)</span>
+        }
+    </div>
+</div>
+
+@if (!booksList.Any())
+{
+    <div class="text-center py-5 border rounded bg-light">
+        <h4 class="h5 text-secondary">No books found</h4>
+        <p class="text-muted mb-3">No books match your selected search or filter criteria.</p>
+        @if (Model.HasActiveFilters)
+        {
+            <a asp-page="Index" class="btn btn-sm btn-outline-secondary">Clear Filters</a>
+        }
+        else
+        {
+            <a asp-page="Create" class="btn btn-sm btn-outline-primary">+ Add a Book</a>
+        }
+    </div>
+}
+else
+{
+    <div class="table-responsive bg-white rounded shadow-sm">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var book in booksList)
+                {
+                    <tr>
+                        <td class="fw-semibold">
+                            <a asp-page="Details" asp-route-id="@book.Id" class="text-decoration-none text-dark">
+                                @book.Title
+                            </a>
+                            @if (book.BookNumber.HasValue)
+                            {
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1 small">Book #@book.BookNumber.Value</span>
+                            }
+                        </td>
+                        <td><code class="text-muted">@book.ISBN</code></td>
+                        <td>@book.AuthorName</td>
+                        <td><span class="badge bg-light text-dark border">@book.CategoryName</span></td>
+                        <td>@book.PublishedYear</td>
+                        <td>
+                            @switch (book.Status)
+                            {
+                                case BookLibrary.Web.Models.BookStatus.WantToRead:
+                                    <span class="badge bg-secondary">Want to Read</span>
+                                    break;
+                                case BookLibrary.Web.Models.BookStatus.Reading:
+                                    <span class="badge bg-info text-dark">Reading</span>
+                                    break;
+                                case BookLibrary.Web.Models.BookStatus.Completed:
+                                    <span class="badge bg-success">Completed</span>
+                                    break;
+                                case BookLibrary.Web.Models.BookStatus.Dropped:
+                                    <span class="badge bg-danger">Dropped</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a asp-page="Details" asp-route-id="@book.Id" class="btn btn-outline-secondary" title="View Details">Details</a>
+                                <a asp-page="Edit" asp-route-id="@book.Id" class="btn btn-outline-primary" title="Edit Book">Edit</a>
+                                <a asp-page="Delete" asp-route-id="@book.Id" class="btn btn-outline-danger" title="Delete Book">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.SearchResults == null && Model.PagedBooks != null && Model.PagedBooks.TotalPages > 1)
+    {
+        <nav aria-label="Book list pagination" class="mt-4">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item @(Model.PagedBooks.Page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-page="Index"
+                       asp-route-pageNumber="@(Model.PagedBooks.Page - 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-status="@Model.Status"
+                       asp-route-authorId="@Model.AuthorId"
+                       asp-route-categoryId="@Model.CategoryId">Previous</a>
+                </li>
+
+                @for (int i = 1; i <= Model.PagedBooks.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PagedBooks.Page ? "active" : "")">
+                        <a class="page-link" asp-page="Index"
+                           asp-route-pageNumber="@i"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-status="@Model.Status"
+                           asp-route-authorId="@Model.AuthorId"
+                           asp-route-categoryId="@Model.CategoryId">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.PagedBooks.Page >= Model.PagedBooks.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-page="Index"
+                       asp-route-pageNumber="@(Model.PagedBooks.Page + 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-status="@Model.Status"
+                       asp-route-authorId="@Model.AuthorId"
+                       asp-route-categoryId="@Model.CategoryId">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

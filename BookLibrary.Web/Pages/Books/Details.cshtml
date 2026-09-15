@@ -1,0 +1,81 @@
+@page "{id:int}"
+@model BookLibrary.Web.Pages.Books.DetailsModel
+@{
+    ViewData["Title"] = Model.Book?.Title ?? "Book Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="d-flex align-items-center mb-4">
+            <a asp-page="Index" class="btn btn-outline-secondary btn-sm me-3">&larr; Back to Books</a>
+            <h1 class="h3 mb-0">Book Details</h1>
+        </div>
+
+        @if (Model.Book == null)
+        {
+            <div class="alert alert-warning">Book not found.</div>
+        }
+        else
+        {
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2 class="h4 card-title mb-1">@Model.Book.Title</h2>
+                            <p class="text-muted mb-0">ISBN: <code>@Model.Book.ISBN</code></p>
+                        </div>
+                        <div>
+                            @switch (Model.Book.Status)
+                            {
+                                case BookLibrary.Web.Models.BookStatus.WantToRead:
+                                    <span class="badge bg-secondary fs-6">Want to Read</span>
+                                    break;
+                                case BookLibrary.Web.Models.BookStatus.Reading:
+                                    <span class="badge bg-info text-dark fs-6">Reading</span>
+                                    break;
+                                case BookLibrary.Web.Models.BookStatus.Completed:
+                                    <span class="badge bg-success fs-6">Completed</span>
+                                    break;
+                                case BookLibrary.Web.Models.BookStatus.Dropped:
+                                    <span class="badge bg-danger fs-6">Dropped</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3 text-muted">Author</dt>
+                        <dd class="col-sm-9 fw-semibold">@Model.Book.AuthorName</dd>
+
+                        <dt class="col-sm-3 text-muted">Category</dt>
+                        <dd class="col-sm-9"><span class="badge bg-light text-dark border">@Model.Book.CategoryName</span></dd>
+
+                        <dt class="col-sm-3 text-muted">Published Year</dt>
+                        <dd class="col-sm-9">@Model.Book.PublishedYear</dd>
+
+                        @if (Model.Book.BookNumber.HasValue)
+                        {
+                            <dt class="col-sm-3 text-muted">Book Number</dt>
+                            <dd class="col-sm-9"><span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6">Book #@Model.Book.BookNumber.Value</span></dd>
+                        }
+
+                        <dt class="col-sm-3 text-muted">Created At</dt>
+                        <dd class="col-sm-9">@Model.Book.CreatedAt.ToString("g")</dd>
+
+                        @if (Model.Book.UpdatedAt.HasValue)
+                        {
+                            <dt class="col-sm-3 text-muted">Last Updated</dt>
+                            <dd class="col-sm-9">@Model.Book.UpdatedAt.Value.ToString("g")</dd>
+                        }
+                    </dl>
+                </div>
+                <div class="card-footer bg-light border-top d-flex justify-content-end gap-2 p-3">
+                    <a asp-page="Edit" asp-route-id="@Model.Book.Id" class="btn btn-primary">Edit Book</a>
+                    <a asp-page="Delete" asp-route-id="@Model.Book.Id" class="btn btn-outline-danger">Delete Book</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,10 @@
+CREATE OR ALTER PROCEDURE dbo.sp_Category_Create
+    @Name NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO dbo.Categories (Name)
+    VALUES (@Name);
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id;
+END;
+GO
