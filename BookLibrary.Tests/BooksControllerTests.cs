@@ -106,4 +106,27 @@ public class BooksControllerTests
         Assert.Equal(2, returnedBook.Id);
         Assert.Equal(2, returnedBook.BookNumber);
     }
+
+    [Fact]
+    public async Task Create_WithBookNumber_WhenStatusIsWantToRead_NormalizesBookNumberToNull()
+    {
+        // Arrange
+        var request = new CreateBookRequest("Refactoring", "978-0201485677", 1, 1, 1999, BookStatus.WantToRead, 5);
+        var normalizedRequest = request with { BookNumber = null };
+        var expectedBook = new BookDto(3, "Refactoring", "978-0201485677", 1, "Martin Fowler", 1, "Software Design", 1999, BookStatus.WantToRead, 1, null, DateTime.UtcNow, null);
+
+        _mockWriter.Setup(w => w.CreateAsync(1, normalizedRequest, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(3);
+        _mockReader.Setup(r => r.GetByIdAsync(3, 1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedBook);
+
+        // Act
+        var result = await _controller.Create(request, CancellationToken.None);
+
+        // Assert
+        var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        var returnedBook = Assert.IsType<BookDto>(createdResult.Value);
+        Assert.Equal(3, returnedBook.Id);
+        Assert.Null(returnedBook.BookNumber);
+    }
 }

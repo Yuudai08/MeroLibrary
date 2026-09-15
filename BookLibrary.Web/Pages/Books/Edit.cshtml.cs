@@ -101,6 +101,11 @@ public class EditModel : PageModel
 
         try
         {
+            // Only allow book number when status is Reading or Dropped
+            var bookNumber = (Input.Status == BookStatus.Reading || Input.Status == BookStatus.Dropped)
+                ? Input.BookNumber
+                : null;
+
             var request = new UpdateBookRequest(
                 Input.Title.Trim(),
                 Input.ISBN.Trim(),
@@ -108,13 +113,14 @@ public class EditModel : PageModel
                 Input.CategoryId,
                 Input.PublishedYear,
                 Input.Status,
-                Input.BookNumber);
+                bookNumber);
 
             var updated = await _bookApiClient.UpdateBookAsync(id, request);
             if (!updated)
             {
-                TempData["ErrorMessage"] = $"Book with ID {id} was not found.";
-                return RedirectToPage("Index");
+                ErrorMessage = "The book could not be found to update.";
+                await LoadDropdownsAsync();
+                return Page();
             }
 
             TempData["SuccessMessage"] = $"Book '{Input.Title}' updated successfully!";
@@ -131,6 +137,36 @@ public class EditModel : PageModel
             ErrorMessage = "An unexpected error occurred while updating the book. Please try again.";
             await LoadDropdownsAsync();
             return Page();
+        }
+    }
+
+    public class QuickAuthorInput
+    {
+        [Required(ErrorMessage = "Author name is required.")]
+        public string Name { get; set; } = string.Empty;
+
+        public string? Biography { get; set; }
+    }
+
+    public async Task<IActionResult> OnPostQuickCreateAuthorAsync([FromBody] QuickAuthorInput request)
+    {
+        if (string.IsNullOrWhiteSpace(request?.Name))
+        {
+            return BadRequest(new { message = "Author name is required." });
+        }
+
+        try
+        {
+            var created = await _authorApiClient.CreateAuthorAsync(new CreateAuthorRequest(request.Name.Trim(), request.Biography?.Trim()));
+            return new JsonResult(created);
+        }
+        catch (ApiException ex)
+        {
+            return StatusCode(ex.StatusCode, new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "An error occurred while creating the author." });
         }
     }
 

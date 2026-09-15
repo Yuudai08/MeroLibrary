@@ -80,6 +80,11 @@ public class CreateModel : PageModel
 
         try
         {
+            // Only allow book number when status is Reading or Dropped
+            var bookNumber = (Input.Status == BookStatus.Reading || Input.Status == BookStatus.Dropped)
+                ? Input.BookNumber
+                : null;
+
             var request = new CreateBookRequest(
                 Input.Title.Trim(),
                 Input.ISBN.Trim(),
@@ -87,7 +92,7 @@ public class CreateModel : PageModel
                 Input.CategoryId,
                 Input.PublishedYear,
                 Input.Status,
-                Input.BookNumber);
+                bookNumber);
 
             var createdBook = await _bookApiClient.CreateBookAsync(request);
             TempData["SuccessMessage"] = $"Book '{createdBook?.Title ?? Input.Title}' created successfully!";
@@ -104,6 +109,36 @@ public class CreateModel : PageModel
             ErrorMessage = "An unexpected error occurred while creating the book. Please try again.";
             await LoadDropdownsAsync();
             return Page();
+        }
+    }
+
+    public class QuickAuthorInput
+    {
+        [Required(ErrorMessage = "Author name is required.")]
+        public string Name { get; set; } = string.Empty;
+
+        public string? Biography { get; set; }
+    }
+
+    public async Task<IActionResult> OnPostQuickCreateAuthorAsync([FromBody] QuickAuthorInput request)
+    {
+        if (string.IsNullOrWhiteSpace(request?.Name))
+        {
+            return BadRequest(new { message = "Author name is required." });
+        }
+
+        try
+        {
+            var created = await _authorApiClient.CreateAuthorAsync(new CreateAuthorRequest(request.Name.Trim(), request.Biography?.Trim()));
+            return new JsonResult(created);
+        }
+        catch (ApiException ex)
+        {
+            return StatusCode(ex.StatusCode, new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "An error occurred while creating the author." });
         }
     }
 

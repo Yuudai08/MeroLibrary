@@ -73,6 +73,12 @@ public class BooksController : ControllerBase
             return validationResult;
         }
 
+        // Only books with Status 'Reading' or 'Dropped' can have a BookNumber
+        if (request.Status != Domain.BookStatus.Reading && request.Status != Domain.BookStatus.Dropped && request.BookNumber.HasValue)
+        {
+            request = request with { BookNumber = null };
+        }
+
         var userId = GetCurrentUserId();
         var newId = await _writer.CreateAsync(userId, request, cancellationToken);
         var createdBook = await _reader.GetByIdAsync(newId, userId, cancellationToken);
@@ -92,6 +98,12 @@ public class BooksController : ControllerBase
         if (validationResult != null)
         {
             return validationResult;
+        }
+
+        // Only books with Status 'Reading' or 'Dropped' can have a BookNumber
+        if (request.Status != Domain.BookStatus.Reading && request.Status != Domain.BookStatus.Dropped && request.BookNumber.HasValue)
+        {
+            request = request with { BookNumber = null };
         }
 
         var userId = GetCurrentUserId();
