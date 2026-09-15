@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BookLibrary.Application\BookLibrary.Application.csproj" />
     <ProjectReference Include="..\BookLibrary.Domain\BookLibrary.Domain.csproj" />
+    <ProjectReference Include="..\BookLibrary.Infrastructure\BookLibrary.Infrastructure.csproj" />
     <ProjectReference Include="..\BookLibrary.Api\BookLibrary.Api.csproj" />
     <ProjectReference Include="..\BookLibrary.Web\BookLibrary.Web.csproj" />
   </ItemGroup>

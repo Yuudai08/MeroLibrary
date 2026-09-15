@@ -39,24 +39,17 @@ CREATE OR ALTER PROCEDURE dbo.sp_Book_Update
     @BookNumber INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
-    BEGIN TRY
-        UPDATE dbo.Books
-        SET Title = @Title,
-            ISBN = @ISBN,
-            AuthorId = @AuthorId,
-            CategoryId = @CategoryId,
-            PublishedYear = @PublishedYear,
-            Status = @Status,
-            BookNumber = @BookNumber,
-            UpdatedAt = SYSUTCDATETIME()
-        WHERE Id = @Id AND UserId = @UserId;
-
-        SELECT @@ROWCOUNT;
-    END TRY
-    BEGIN CATCH
-        THROW;
-    END CATCH
+    SET NOCOUNT OFF;
+    UPDATE dbo.Books
+    SET Title = @Title,
+        ISBN = @ISBN,
+        AuthorId = @AuthorId,
+        CategoryId = @CategoryId,
+        PublishedYear = @PublishedYear,
+        Status = @Status,
+        BookNumber = @BookNumber,
+        UpdatedAt = SYSUTCDATETIME()
+    WHERE Id = @Id AND UserId = @UserId;
 END;
 GO
 
@@ -66,16 +59,9 @@ CREATE OR ALTER PROCEDURE dbo.sp_Book_Delete
     @UserId INT
 AS
 BEGIN
-    SET NOCOUNT ON;
-    BEGIN TRY
-        DELETE FROM dbo.Books
-        WHERE Id = @Id AND UserId = @UserId;
-
-        SELECT @@ROWCOUNT;
-    END TRY
-    BEGIN CATCH
-        THROW;
-    END CATCH
+    SET NOCOUNT OFF;
+    DELETE FROM dbo.Books
+    WHERE Id = @Id AND UserId = @UserId;
 END;
 GO
 
