@@ -142,6 +142,34 @@ public class CreateModel : PageModel
         }
     }
 
+    public class QuickCategoryInput
+    {
+        [Required(ErrorMessage = "Category name is required.")]
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public async Task<IActionResult> OnPostQuickCreateCategoryAsync([FromBody] QuickCategoryInput request)
+    {
+        if (string.IsNullOrWhiteSpace(request?.Name))
+        {
+            return BadRequest(new { message = "Category name is required." });
+        }
+
+        try
+        {
+            var created = await _categoryApiClient.CreateCategoryAsync(new CreateCategoryRequest(request.Name.Trim()));
+            return new JsonResult(created);
+        }
+        catch (ApiException ex)
+        {
+            return StatusCode(ex.StatusCode, new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "An error occurred while creating the category." });
+        }
+    }
+
     private async Task LoadDropdownsAsync()
     {
         var authors = await _authorApiClient.GetAllAuthorsAsync();
