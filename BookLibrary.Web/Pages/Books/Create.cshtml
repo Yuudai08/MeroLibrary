@@ -86,9 +86,6 @@
                             Book Number <span class="text-muted fw-normal small">(Optional)</span>
                         </label>
                         <input asp-for="Input.BookNumber" id="bookNumberInput" class="form-control" type="number" min="1" placeholder="e.g. 1, 2, 3..." />
-                        <div class="form-text small" id="bookNumberHelp">
-                            Optional: track the book number of the book you are currently reading or part of a series.
-                        </div>
                         <span asp-validation-for="Input.BookNumber" class="text-danger small"></span>
                     </div>
 
@@ -158,7 +155,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             const statusSelect = document.getElementById('statusSelect');
             const bookNumberInput = document.getElementById('bookNumberInput');
-            const bookNumberHelp = document.getElementById('bookNumberHelp');
 
             const authorSelect = document.getElementById('authorSelect');
             const quickAuthorModalEl = document.getElementById('quickAddAuthorModal');
@@ -184,14 +180,10 @@
                 if (isReadingOrDropped) {
                     bookNumberInput.disabled = false;
                     bookNumberInput.placeholder = 'e.g. 1, 2, 3...';
-                    bookNumberHelp.className = 'form-text small text-muted';
-                    bookNumberHelp.innerHTML = 'Active: Enter the book number for this book you are reading or dropped.';
                 } else {
                     bookNumberInput.disabled = true;
                     bookNumberInput.value = '';
-                    bookNumberInput.placeholder = "Disabled: Only available when Status is 'Reading' or 'Dropped'";
-                    bookNumberHelp.className = 'form-text small text-secondary';
-                    bookNumberHelp.innerHTML = '<span class="text-secondary fw-semibold">&#9432; Book number is only available when Status is "Reading" or "Dropped".</span>';
+                    bookNumberInput.placeholder = '';
                 }
             }
 
