@@ -125,7 +125,7 @@ dotnet test
 ## 7. Solution Structure
 
 ```text
-d:\Dryice\
+d:\MeroLibrary\
 ├── BookLibrary.Api/             ← REST Web API (JWT Bearer Auth, Controllers)
 ├── BookLibrary.Application/     ← Use cases, DTOs, abstractions
 ├── BookLibrary.Domain/          ← Core entities (User, Book, Author, Category)
